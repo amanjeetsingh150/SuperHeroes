@@ -1,5 +1,8 @@
 package com.developers.superheroes.dagger;
 
+import android.util.Log;
+
+import com.developers.superheroes.BuildConfig;
 import com.developers.superheroes.util.ApiInterface;
 import com.developers.superheroes.util.Constants;
 
@@ -10,6 +13,9 @@ import dagger.Module;
 import dagger.Provides;
 import retrofit2.Converter;
 import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+
+import static com.developers.superheroes.BuildConfig.SUPERHERO_KEY;
 
 /**
  * Created by Amanjeet Singh on 07-Jul-17.
@@ -33,6 +39,12 @@ public class NetModule {
                 .baseUrl(base_url)
                 .addConverterFactory(factory)
                 .build();
+    }
+
+    @Provides
+    @Singleton
+    Converter.Factory provideGsonConverter(){
+        return GsonConverterFactory.create();
     }
 
     @Provides

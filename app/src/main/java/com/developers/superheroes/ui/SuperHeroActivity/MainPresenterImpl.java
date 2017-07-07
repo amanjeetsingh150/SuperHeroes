@@ -8,7 +8,6 @@ import com.developers.superheroes.model.Result;
 import com.developers.superheroes.util.ApiInterface;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -43,9 +42,7 @@ public class MainPresenterImpl implements MainPresenter {
                 .enqueue(new Callback<Result>() {
                     @Override
                     public void onResponse(Call<Result> call, Response<Result> response) {
-                        view.hideLoading();
-//                        if(response.body())
-                        Log.d(TAG,response+"");
+                        String name=response.body().getName();
                     }
 
                     @Override

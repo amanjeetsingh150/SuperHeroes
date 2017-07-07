@@ -4,7 +4,7 @@ import com.developers.superheroes.model.Result;
 
 import retrofit2.Call;
 import retrofit2.http.GET;
-import retrofit2.http.Query;
+import retrofit2.http.Path;
 
 /**
  * Created by Amanjeet Singh on 07-Jul-17.
@@ -12,7 +12,7 @@ import retrofit2.http.Query;
 
 public interface ApiInterface {
 
-    @GET("/")
-    Call<Result> getHeroesById(@Query("id")int charId);
+    @GET(Constants.BASE_URL+"/{id}")
+    Call<Result> getHeroesById(@Path("id") int charId);
 
 }

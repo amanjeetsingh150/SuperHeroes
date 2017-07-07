@@ -6,6 +6,9 @@ import android.support.v7.widget.RecyclerView;
 
 import com.developers.superheroes.R;
 import com.developers.superheroes.InitApplication;
+import com.developers.superheroes.model.Result;
+
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -27,6 +30,7 @@ public class MainActivity extends AppCompatActivity implements MainView {
         ((InitApplication)getApplication()).getAppComponent().inject(this);
         ButterKnife.bind(this);
         presenter.setView(this);
+        presenter.getHeroes(10);
     }
 
     @Override
@@ -43,4 +47,10 @@ public class MainActivity extends AppCompatActivity implements MainView {
     public void showError(String error) {
 
     }
+
+    @Override
+    public void showHeroes(List<Result> resultList) {
+
+    }
+
 }
