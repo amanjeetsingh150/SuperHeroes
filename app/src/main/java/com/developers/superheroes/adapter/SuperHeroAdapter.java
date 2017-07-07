@@ -48,6 +48,11 @@ public class SuperHeroAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     }
 
     @Override
+    public int getItemViewType(int position) {
+        return super.getItemViewType(position);
+    }
+
+    @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
 
     }

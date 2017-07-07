@@ -1,5 +1,7 @@
 package com.developers.superheroes.ui.SuperHeroActivity;
 
+import java.util.List;
+
 /**
  * Created by Amanjeet Singh on 07-Jul-17.
  */
@@ -7,5 +9,5 @@ package com.developers.superheroes.ui.SuperHeroActivity;
 public interface MainPresenter {
 
     void setView(MainView view);
-    void getHeroes(int id);
+    void getHeroes(List<Integer> ids);
 }

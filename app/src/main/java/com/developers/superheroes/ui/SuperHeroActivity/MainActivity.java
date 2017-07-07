@@ -8,6 +8,8 @@ import com.developers.superheroes.R;
 import com.developers.superheroes.InitApplication;
 import com.developers.superheroes.model.Result;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -20,6 +22,8 @@ public class MainActivity extends AppCompatActivity implements MainView {
     @BindView(R.id.recycler_view)
     RecyclerView recyclerView;
 
+    List<Integer> idList;
+
     @Inject
     MainPresenter presenter;
 
@@ -30,7 +34,17 @@ public class MainActivity extends AppCompatActivity implements MainView {
         ((InitApplication)getApplication()).getAppComponent().inject(this);
         ButterKnife.bind(this);
         presenter.setView(this);
-        presenter.getHeroes(10);
+        makeList();
+    }
+
+    private void makeList(){
+        idList=new ArrayList<>(Arrays.asList(1,2,3,4,5,6,7,8,9,10));
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        presenter.getHeroes(idList);
     }
 
     @Override
