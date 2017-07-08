@@ -2,11 +2,16 @@ package com.developers.superheroes.ui.SuperHeroActivity;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 
 import com.developers.superheroes.R;
 import com.developers.superheroes.InitApplication;
+import com.developers.superheroes.adapter.SuperHeroAdapter;
 import com.developers.superheroes.model.Result;
+import com.developers.superheroes.model.SuperHero;
+import com.developers.superheroes.util.OnLoadMoreListener;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -27,6 +32,8 @@ public class MainActivity extends AppCompatActivity implements MainView {
     @Inject
     MainPresenter presenter;
 
+    private static final String TAG=MainActivity.class.getSimpleName();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,6 +42,7 @@ public class MainActivity extends AppCompatActivity implements MainView {
         ButterKnife.bind(this);
         presenter.setView(this);
         makeList();
+        presenter.getHeroes(idList);
     }
 
     private void makeList(){
@@ -44,7 +52,6 @@ public class MainActivity extends AppCompatActivity implements MainView {
     @Override
     protected void onStart() {
         super.onStart();
-        presenter.getHeroes(idList);
     }
 
     @Override
@@ -63,8 +70,18 @@ public class MainActivity extends AppCompatActivity implements MainView {
     }
 
     @Override
-    public void showHeroes(List<Result> resultList) {
-
+    public void showHeroes(List<SuperHero> resultList) {
+        //Log.d(TAG,resultList.get(0).getImgUrl()+"");
+        GridLayoutManager llm = new GridLayoutManager(getApplicationContext(),2);
+        SuperHeroAdapter superHeroAdapter=new SuperHeroAdapter(MainActivity.this,recyclerView,resultList,llm);
+        recyclerView.setLayoutManager(llm);
+        recyclerView.setAdapter(superHeroAdapter);
+        superHeroAdapter.setOnLoadMoreListener(new OnLoadMoreListener() {
+            @Override
+            public void onLoadMore() {
+                Log.d(TAG,"Load More Data");
+            }
+        });
     }
 
 }

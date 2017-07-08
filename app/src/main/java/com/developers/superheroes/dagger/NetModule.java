@@ -13,6 +13,7 @@ import dagger.Module;
 import dagger.Provides;
 import retrofit2.Converter;
 import retrofit2.Retrofit;
+import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 import static com.developers.superheroes.BuildConfig.SUPERHERO_KEY;
@@ -33,12 +34,20 @@ public class NetModule {
 
     @Provides
     @Singleton
-    Retrofit provideRetrofit(@Named(BASE_URL) String base_url,
-                             Converter.Factory factory) {
+    Retrofit provideRetrofit(RxJava2CallAdapterFactory factory,
+                             @Named(BASE_URL) String base_url,
+                             Converter.Factory converter) {
         return new Retrofit.Builder()
                 .baseUrl(base_url)
-                .addConverterFactory(factory)
+                .addCallAdapterFactory(factory)
+                .addConverterFactory(converter)
                 .build();
+    }
+
+    @Provides
+    @Singleton
+    RxJava2CallAdapterFactory provideRxCallAdapterFactory() {
+        return RxJava2CallAdapterFactory.create();
     }
 
     @Provides

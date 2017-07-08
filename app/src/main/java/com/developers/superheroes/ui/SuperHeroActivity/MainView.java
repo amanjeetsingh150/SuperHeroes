@@ -1,6 +1,7 @@
 package com.developers.superheroes.ui.SuperHeroActivity;
 
 import com.developers.superheroes.model.Result;
+import com.developers.superheroes.model.SuperHero;
 
 import java.util.List;
 
@@ -16,6 +17,6 @@ public interface MainView {
 
     void showError(String error);
 
-    void showHeroes(List<Result> resultList);
+    void showHeroes(List<SuperHero> resultList);
 
 }

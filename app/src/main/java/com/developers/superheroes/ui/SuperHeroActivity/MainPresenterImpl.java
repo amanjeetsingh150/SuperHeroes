@@ -1,23 +1,37 @@
 package com.developers.superheroes.ui.SuperHeroActivity;
 
 import android.content.Context;
+import android.os.AsyncTask;
 import android.util.Log;
+import android.view.View;
 
 import com.developers.superheroes.InitApplication;
-import com.developers.superheroes.model.Appearance;
-import com.developers.superheroes.model.Biography;
-import com.developers.superheroes.model.Image;
-import com.developers.superheroes.model.Powerstats;
 import com.developers.superheroes.model.Result;
+import com.developers.superheroes.model.SuperHero;
 import com.developers.superheroes.util.ApiInterface;
+import com.developers.superheroes.util.Constants;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.net.ssl.HttpsURLConnection;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.BiFunction;
+import io.reactivex.functions.Function;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * Created by Amanjeet Singh on 07-Jul-17.
@@ -29,6 +43,9 @@ public class MainPresenterImpl implements MainPresenter {
 
     @Inject
     ApiInterface apiClient;
+
+    private List<SuperHero> superHeroesList = new ArrayList<>();
+    private int i;
 
     private static final String TAG = MainPresenterImpl.class.getSimpleName();
 
@@ -43,40 +60,97 @@ public class MainPresenterImpl implements MainPresenter {
     }
 
     @Override
-    public void getHeroes(List<Integer> ids) {
-        for (int i : ids) {
-            apiClient.getHeroesById(i)
-                    .enqueue(new Callback<Result>() {
-                        @Override
-                        public void onResponse(Call<Result> call, Response<Result> response) {
-                            String name = response.body().getName();
-                            Powerstats powerstats = response.body().getPowerstats();
-                            String intelligence = powerstats.getIntelligence();
-                            String strength = powerstats.getStrength();
-                            String speed = powerstats.getSpeed();
-                            String durability = powerstats.getDurability();
-                            String power = powerstats.getPower();
-                            String combat = powerstats.getCombat();
-                            Image image = response.body().getImage();
-                            String imgUrl = image.getUrl();
-                            Biography biography = response.body().getBiography();
-                            String fullName=biography.getFullName();
-                            String alter=biography.getAlterEgos();
-                            String placeOfBirth=biography.getPlaceOfBirth();
-                            String firstAppear=biography.getFirstAppearance();
-                            String publisher=biography.getPublisher();
-                            Appearance appearance=response.body().getAppearance();
-                            String gender=appearance.getGender();
-                            String race=appearance.getRace();
-                            List<String> height=appearance.getHeight();
-                            List<String> weight=appearance.getWeight();
-                        }
+    public void getHeroes(final List<Integer> ids) {
+        new FetchHeroes().execute(ids);
+    }
 
-                        @Override
-                        public void onFailure(Call<Result> call, Throwable t) {
+    class FetchHeroes extends AsyncTask<List<Integer>, Void, List<SuperHero>> {
 
-                        }
-                    });
+        List<SuperHero> superHeroList = new ArrayList<>();
+
+        @Override
+        protected List<SuperHero> doInBackground(List<Integer>... lists) {
+            for (int i = 0; i < lists[0].size(); i++) {
+                HttpURLConnection connection = null;
+                BufferedReader bufferReader = null;
+                try {
+                    URL url = new URL(Constants.BASE_URL + String.valueOf(lists[0].get(i)));
+                    connection = (HttpURLConnection) url.openConnection();
+                    connection.setRequestMethod("GET");
+                    connection.connect();
+                    InputStream inputstream = connection.getInputStream();
+                    StringBuffer buffer = new StringBuffer();
+                    String line = "";
+                    bufferReader = new BufferedReader(new InputStreamReader(inputstream));
+                    while ((line = bufferReader.readLine()) != null) {
+                        buffer.append(line + "\n");
+                    }
+                    Log.d(TAG, buffer.toString());
+                    superHeroList = parseJson(buffer.toString());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            return superHeroList;
+        }
+
+        @Override
+        protected void onPostExecute(List<SuperHero> superHeroList) {
+            super.onPostExecute(superHeroList);
+            view.showHeroes(superHeroList);
+        }
+
+        private List<SuperHero> parseJson(String response) {
+            try {
+                JSONObject responseObj = new JSONObject(response);
+                String name = responseObj.getString("name");
+                JSONObject powerResponse = responseObj.getJSONObject("powerstats");
+                String intelligence = powerResponse.getString("intelligence");
+                String strength = powerResponse.getString("strength");
+                String speed = powerResponse.getString("speed");
+                String durability = powerResponse.getString("durability");
+                String power = powerResponse.getString("power");
+                String combat = powerResponse.getString("combat");
+                JSONObject biographyResponse = responseObj.getJSONObject("biography");
+                String fullName = biographyResponse.getString("full-name");
+                String alter = biographyResponse.getString("alter-egos");
+                String placeOfBirth = biographyResponse.getString("place-of-birth");
+                String firstAppearance = biographyResponse.getString("first-appearance");
+                String publisher = biographyResponse.getString("publisher");
+                JSONObject appearanceResponse = responseObj.getJSONObject("appearance");
+                String gender = appearanceResponse.getString("gender");
+                String race = appearanceResponse.getString("race");
+                String heightArr = appearanceResponse.getString("height");
+                heightArr = heightArr.substring(1, 6);
+                String weightArr = appearanceResponse.getString("weight");
+                weightArr = weightArr.substring(1, weightArr.indexOf(","));
+                JSONObject imageResponse = responseObj.getJSONObject("image");
+                String imageUrl = imageResponse.getString("url");
+                Log.d(TAG, heightArr);
+                Log.d(TAG, weightArr);
+                SuperHero superHero = new SuperHero();
+                superHero.setIntelligence(intelligence);
+                superHero.setStrength(strength);
+                superHero.setSpeed(speed);
+                superHero.setDurability(durability);
+                superHero.setCombat(combat);
+                superHero.setImgUrl(imageUrl);
+                superHero.setFullName(fullName);
+                superHero.setAlter(alter);
+                superHero.setPlaceOfBirth(placeOfBirth);
+                superHero.setFirstAppear(firstAppearance);
+                superHero.setPublisher(publisher);
+                superHero.setGender(gender);
+                superHero.setPower(power);
+                superHero.setRace(race);
+                superHero.setHeight(heightArr);
+                superHero.setWeight(weightArr);
+                superHero.setName(name);
+                superHeroesList.add(superHero);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            return superHeroesList;
         }
     }
 }

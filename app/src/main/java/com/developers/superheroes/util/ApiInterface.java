@@ -2,6 +2,7 @@ package com.developers.superheroes.util;
 
 import com.developers.superheroes.model.Result;
 
+import io.reactivex.Observable;
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
@@ -13,6 +14,6 @@ import retrofit2.http.Path;
 public interface ApiInterface {
 
     @GET(Constants.BASE_URL+"/{id}")
-    Call<Result> getHeroesById(@Path("id") int charId);
+    Observable<Result> getHeroesById(@Path("id") int charId);
 
 }
