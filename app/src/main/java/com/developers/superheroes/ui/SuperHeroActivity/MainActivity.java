@@ -1,5 +1,6 @@
 package com.developers.superheroes.ui.SuperHeroActivity;
 
+import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
@@ -31,6 +32,9 @@ public class MainActivity extends AppCompatActivity implements MainView {
 
     @Inject
     MainPresenter presenter;
+    @Inject
+    SharedPreferences sharedPreferences;
+
 
     private static final String TAG=MainActivity.class.getSimpleName();
 
@@ -70,16 +74,21 @@ public class MainActivity extends AppCompatActivity implements MainView {
     }
 
     @Override
-    public void showHeroes(List<SuperHero> resultList) {
-        //Log.d(TAG,resultList.get(0).getImgUrl()+"");
+    public void showHeroes(final List<SuperHero> resultList) {
         GridLayoutManager llm = new GridLayoutManager(getApplicationContext(),2);
-        SuperHeroAdapter superHeroAdapter=new SuperHeroAdapter(MainActivity.this,recyclerView,resultList,llm);
+        final SuperHeroAdapter superHeroAdapter=new SuperHeroAdapter(MainActivity.this,recyclerView,resultList,llm);
         recyclerView.setLayoutManager(llm);
         recyclerView.setAdapter(superHeroAdapter);
         superHeroAdapter.setOnLoadMoreListener(new OnLoadMoreListener() {
             @Override
             public void onLoadMore() {
                 Log.d(TAG,"Load More Data");
+                if(resultList.size()<=10){
+                    resultList.add(null);
+                    superHeroAdapter.notifyItemInserted(resultList.size()-1);
+                    //Generate more data
+
+                }
             }
         });
     }

@@ -1,5 +1,7 @@
 package com.developers.superheroes.dagger;
 
+import android.content.SharedPreferences;
+
 import com.developers.superheroes.ui.SuperHeroActivity.MainActivity;
 import com.developers.superheroes.ui.SuperHeroActivity.MainPresenterImpl;
 
@@ -19,6 +21,7 @@ public interface AppComponent {
     void inject(MainActivity target);
 
     void inject(MainPresenterImpl Impltarget);
+
 
 
 }

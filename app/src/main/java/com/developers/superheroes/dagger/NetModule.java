@@ -1,5 +1,8 @@
 package com.developers.superheroes.dagger;
 
+import android.app.Application;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.developers.superheroes.BuildConfig;
