@@ -18,6 +18,7 @@ import com.developers.superheroes.model.SuperHero;
 import com.developers.superheroes.util.OnLoadMoreListener;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -38,6 +39,7 @@ public class SuperHeroAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     private int totalItemCount, lastVisibleItem;
     private GridLayoutManager layoutManager;
     private List<SuperHero> superHeroList;
+    private List<SuperHero> mSuperHeroList;
 
     public SuperHeroAdapter(Context context, RecyclerView recyclerView, List<SuperHero> superHeroList, final GridLayoutManager lm) {
         this.context = context;
@@ -82,7 +84,6 @@ public class SuperHeroAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             SuperHero superHero = superHeroList.get(position);
             SuperHeroViewHolder superHeroViewHolder = (SuperHeroViewHolder) holder;
             superHeroViewHolder.heroNameTextView.setText(superHero.getName());
-            Log.d("TAG",superHero.getImgUrl());
             Picasso.with(context).load(superHero.getImgUrl()).into(superHeroViewHolder.heroImageView);
         } else if (holder instanceof LoadingViewHolder) {
             LoadingViewHolder loadingViewHolder = (LoadingViewHolder) holder;
@@ -93,6 +94,10 @@ public class SuperHeroAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     @Override
     public int getItemCount() {
         return superHeroList.size();
+    }
+
+    public void setLoaded(){
+        isLoading=false;
     }
 
     class LoadingViewHolder extends RecyclerView.ViewHolder {
@@ -121,6 +126,12 @@ public class SuperHeroAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
     public void setOnLoadMoreListener(OnLoadMoreListener onLoadMoreListener) {
         this.onLoadMoreListener = onLoadMoreListener;
+    }
+
+    public void setFilter(List<SuperHero> superHeroListModel){
+        mSuperHeroList=new ArrayList<>();
+        mSuperHeroList.addAll(superHeroListModel);
+        notifyDataSetChanged();
     }
 
 }

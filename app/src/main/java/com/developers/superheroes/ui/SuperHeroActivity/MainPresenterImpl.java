@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.View;
 
 import com.developers.superheroes.InitApplication;
+import com.developers.superheroes.adapter.SuperHeroAdapter;
 import com.developers.superheroes.model.Result;
 import com.developers.superheroes.model.SuperHero;
 import com.developers.superheroes.util.ApiInterface;
@@ -40,6 +41,7 @@ import io.reactivex.schedulers.Schedulers;
 public class MainPresenterImpl implements MainPresenter {
 
     private MainView view;
+    private SuperHeroAdapter superHeroAdapter;
 
     @Inject
     ApiInterface apiClient;
@@ -60,9 +62,12 @@ public class MainPresenterImpl implements MainPresenter {
     }
 
     @Override
-    public void getHeroes(final List<Integer> ids) {
+    public void getHeroes(final List<Integer> ids, SuperHeroAdapter superHeroAdapter) {
+        this.superHeroAdapter=superHeroAdapter;
         new FetchHeroes().execute(ids);
     }
+
+
 
     class FetchHeroes extends AsyncTask<List<Integer>, Void, List<SuperHero>> {
 
@@ -71,6 +76,7 @@ public class MainPresenterImpl implements MainPresenter {
         @Override
         protected List<SuperHero> doInBackground(List<Integer>... lists) {
             for (int i = 0; i < lists[0].size(); i++) {
+                Log.d(TAG,lists[0].get(i)+"");
                 HttpURLConnection connection = null;
                 BufferedReader bufferReader = null;
                 try {
@@ -126,8 +132,6 @@ public class MainPresenterImpl implements MainPresenter {
                 weightArr = weightArr.substring(1, weightArr.indexOf(","));
                 JSONObject imageResponse = responseObj.getJSONObject("image");
                 String imageUrl = imageResponse.getString("url");
-                Log.d(TAG, heightArr);
-                Log.d(TAG, weightArr);
                 SuperHero superHero = new SuperHero();
                 superHero.setIntelligence(intelligence);
                 superHero.setStrength(strength);
